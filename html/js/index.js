@@ -58,6 +58,10 @@ class App {
 					var f = new Date(fecha);
 					return f.getHours().toString().padStart(2,"0")+":"+f.getMinutes().toString().padStart(2,"0");
 				},
+				fecha_vuelo:function(fecha){
+					var f = new Date(fecha);
+					return f.toString();
+				},
 				//el usuario confirma la reserva, trae como parámetro el item que contiene la fecha y hora de reserva
 				reservar:function(it){
 
@@ -87,7 +91,10 @@ class App {
 					this.socket.emit("reservas_consultar",this.reserva.cedula,(err,lista)=>{
 						this.isdisabledbtn=false;
 						if(!err){
-							this.lista_reservas=lista;
+							var n = lista.length;
+							for(var i=0; i<n; i++){
+								this.lista_reservas.push(lista[i]);
+							}
 							if(lista.length==0){
 								alert("No hay reservas para el número de cédula digitado");
 							}

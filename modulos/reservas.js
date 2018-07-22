@@ -17,7 +17,7 @@ reservas.crear_itinerario=function(i){
 
 	var horario_manana = new Date();
 	horario_manana.setDate(horario_manana.getDate()+i);
-	
+
 	var multiplicador = 1;
 	var dia_de_la_semana = horario_manana.getDay();
 
@@ -90,32 +90,47 @@ reservas.reservas_reservar=function(data,callback){
 	ahora.setFullYear(ahora.getFullYear()-18);
 	ahora = ahora.getTime();
 	if(fnacimiento.getTime()<=ahora){//solo si la fecha de nacimiento es 18 años menor que la actual
-		//se verifica que el cliente no tenga una reserva para ese día
-		modelo_itinerario.findOne({_id:data._id,"reservas.cedula":data.info.cedula},{reservas:0},(err,res)=>{
-			if(!err){
-				if(res){
-					callback("Ya tiene reservado un vuelo para este día",true);
-				}
-				else{
-					modelo_itinerario.update({_id:data._id},{$push:{reservas:{cedula:data.info.cedula}}},{},(erru,resu)=>{
-						if(!erru){
-							if(resu.nModified==1){
-								callback(null,true);
+		
+		//se obtiene la fecha del vuelo
+		modelo_itinerario.findOne({_id:data._id},{fecha:1},(errf,resf)=>{
+			if(!errf){
+				if(resf){
+					var inicio = new Date(resf.fecha);
+					inicio.setHours(0,0,0);
+					var fin = new Date(resf.fecha);
+					fin.setDate(fin.getDate()+1);
+					fin.setHours(0,0,0);
+					//se verifica que el cliente no tenga una reserva para ese día
+					modelo_itinerario.findOne({$and:[{fecha:{$gte:inicio}},{fecha:{$lt:fin}},{"reservas.cedula":data.info.cedula}]},{reservas:0},(err,res)=>{
+						if(!err){
+							if(res){
+								callback("Ya tiene reservado un vuelo para este día",true);
 							}
 							else{
-								callback("Error al registrar reserva",null);
+								modelo_itinerario.update({_id:data._id},{$push:{reservas:{cedula:data.info.cedula}}},{},(erru,resu)=>{
+									if(!erru){
+										if(resu.nModified==1){
+											callback(null,true);
+										}
+										else{
+											callback("Error al registrar reserva",null);
+										}
+									}
+									else{
+										callback("Error al registrar reserva",null);
+									}
+								});
 							}
 						}
 						else{
-							callback("Error al registrar reserva",null);
+							callback(null,true);
 						}
 					});
+
 				}
 			}
-			else{
-				callback(null,true);
-			}
 		});
+		
 	}
 	else{
 		callback("Debe ser mayor de edad para poder registrar su reserva",null);

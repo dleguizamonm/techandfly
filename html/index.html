@@ -13,7 +13,7 @@
 			<div class="cell small-3 medium-4 large-2" style="margin-bottom:3rem">
 				<div class="text-center padding-3">
 					<h3>Techa And Fly</h3><br>
-					Prueba técnica para ser un SOLVER !<br>Danilo Leguizamón<br>dleguizamonm@gmail.com<br>
+					Prueba técnica para ser un SOLVER !<br>Danilo Leguizamón<br>dleguizamonm@gmail.com<br><a target="_blanck" href="https://github.com/dleguizamonm/techandfly">https://github.com/dleguizamonm/techandfly</a>
 				</div>
 			</div>
 		
@@ -103,7 +103,7 @@
 									</thead>
 									<tbody>
 										<tr v-for="r in lista_reservas">
-											<td>{{r.fecha}}</td>
+											<td>{{fecha_vuelo(r.fecha)}}</td>
 											<td><span v-for="d in destinos" v-if="d.id==r.origen">{{d.nombre}}</span></td>
 											<td><span v-for="d in destinos" v-if="d.id==r.destino">{{d.nombre}}</span></td>
 											<td>{{r.precio}}</td>
@@ -116,9 +116,6 @@
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="cell small-3 medium-4 large-2 text-center" style="position:relative; bottom:0px">
-				
 			</div>
 		</div>
 		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
