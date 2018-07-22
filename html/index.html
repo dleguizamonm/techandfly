@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+		<title>Tech and Fly</title>
+		<link rel="stylesheet" href="css/foundation.min.css">
+	</head>
+	<body>
+		
+		<div class="grid-container" id="index">
+			<div class="cell small-3 medium-4 large-2" style="margin-bottom:3rem">
+				<div class="text-center padding-3">
+					<h3>Techa And Fly</h3><br>
+					Prueba técnica para ser un SOLVER !<br>Danilo Leguizamón<br>dleguizamonm@gmail.com<br>
+				</div>
+			</div>
+		
+			<div class="grid-x grid-margin-x">
+
+				<div class="cell medium-3">
+					<ul class="vertical tabs" data-tabs id="example-tabs">
+						<li class="tabs-title is-active"><a href="#panel1v" aria-selected="true">Consultar vuelos</a></li>
+						<li class="tabs-title"><a href="#panel2v">Consultar reservas</a></li>
+					</ul>
+				</div>
+				<div class="cell medium-9">
+					<div class="tabs-content" data-tabs-content="example-tabs">
+						<div class="tabs-panel is-active" style="padding-top:2rem" id="panel1v">
+							
+							<div class="medium-6 cell">
+								<label>Seleccione origen: </label>
+								<select class="input-group-field" v-model="form_consulta.origen">
+									<option v-for="d in destinos" :value="d.id">{{d.nombre}}</option>
+								</select>
+							</div>
+							<div class="medium-6 cell">
+								<label>Seleccione destino: </label>
+								<select class="input-group-field" v-model="form_consulta.destino">
+									<option v-for="d in destinos" :value="d.id">{{d.nombre}}</option>
+								</select>
+							</div>
+							<div class="medium-6 cell">
+								<label>Seleccione fecha de viaje y haga clic en consultar: </label>
+								<div class="input-group">
+									<input type="date" v-model="form_consulta.fecha" class="input-group-field">
+									<div class="input-group-button">
+										<input type="button" :disabled="isdisabledbtn"  @click="reservas_fconsulta_fecha" class="button" value="Consultar">
+									</div>
+								</div>
+							</div>
+							<div class="grid-container">
+								<div class="medium-6" v-for="(it,i) in itinerario">
+									<div class="card">
+										<div class="card-divider cell">
+											<div class="cell">VUELO {{(i+1)}}.<br><strong>Salida {{formatear_fecha(it.fecha)}}</strong></div>
+										</div>
+										<div class="card-section">
+											<div class="cell">Origen: <span v-for="d in destinos" v-if="d.id==it.origen"><strong>{{d.nombre}}</strong></span></div>
+											<div class="cell">Destino: <span v-for="d in destinos" v-if="d.id==it.destino"><strong>{{d.nombre}}</strong></span></div>
+											<div class="cell"></div>
+											<div class="cell"><h4>Precio {{it.precio}}</h4></div>
+											<input type="button" class="button success" @click="it.ver=!it.ver" value="Reservar">
+										</div>
+										<div v-if="it.ver" class="card-section">
+											<div class="medium-6 cell">
+												<label>Número de cédula</label>
+												<input type="text" class="input-group-field" v-model="reserva.cedula">
+											</div>
+											<div class="medium-6 cell">
+												<label>Fecha de nacimiento</label>
+												<input type="date" class="input-group-field" :max="maxdate" v-model="reserva.fnacimiento">
+											</div>
+											<div class="medium-6 cell" style="padding-top:2rem">
+												<input type="button" :disabled="isdisabledbtn" class="button info" @click="reservar(it)" value="Confirmar reserva">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="tabs-panel" id="panel2v">
+							<div class="medium-6 cell">
+								<label>Digite su cédula y haga clic en consultar</label>
+								<div class="input-group">
+									<input type="text" v-model="reserva.cedula" class="input-group-field">
+									<div class="input-group-button">
+										<input type="button" :disabled="isdisabledbtn"  @click="reservas_consultar" class="button" value="Consultar">
+									</div>
+								</div>
+							</div>
+							<div class="medium-6 cell" style="margin-top:2rem">
+								<table>
+									<thead>
+										<tr>
+											<th>Fecha</th>
+											<th>Origen</th>
+											<th>Destino</th>
+											<th>Precio</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="r in lista_reservas">
+											<td>{{r.fecha}}</td>
+											<td><span v-for="d in destinos" v-if="d.id==r.origen">{{d.nombre}}</span></td>
+											<td><span v-for="d in destinos" v-if="d.id==r.destino">{{d.nombre}}</span></td>
+											<td>{{r.precio}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="cell small-3 medium-4 large-2 text-center" style="position:relative; bottom:0px">
+				
+			</div>
+		</div>
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js"></script>
+		<script src="js/foundation.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+		<script src="js/index.js"></script>
+		<script>
+		
+		var app = new App();
+		$(document).foundation();
+		</script>
+	</body>
+</html> 
